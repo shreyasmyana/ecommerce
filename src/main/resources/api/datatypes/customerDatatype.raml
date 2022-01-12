@@ -1,0 +1,52 @@
+#%RAML 1.0 Library
+types:
+  customerType:
+    properties:
+      customerID?:
+        type: string
+        required: true
+        example:
+          "1"
+      firstname:
+        type: string
+        required: true
+        example:
+          Ashish
+      lastname:
+        type: string
+        required: true
+        example:
+          Pardhi
+      age:
+        type: integer
+      address: 
+        type: addressType
+        required: true
+      phone?:
+        type: phoneType[]
+
+  addressType:
+    properties:
+      street:
+        type: string
+        required: true 
+        example:
+          MG Road
+      city:
+        type: string
+        required: true
+        example:
+          Chennai
+
+  phoneType:
+    properties:
+      phoneNumber: 
+        type: string
+        example:
+          +91 1234555555
+      phoneType:
+        enum:
+          - Mobile
+          - Phone
+        example:
+          Mobile

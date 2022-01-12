@@ -1,0 +1,87 @@
+#%RAML 1.0
+title: Ecommerce API
+
+uses:
+  ecomResources : resourcetypes/ecomResource.raml
+  ecomCustomerResource : resourcetypes/ecomCustomerResource.raml
+  ecomItemResource : resourcetypes/ecomItemResource.raml
+
+traits:
+  client-id-required: !include traits/clientIdEnforcement.raml
+
+description: This is an Ecommerce API
+mediaType: 
+  - application/json
+  - application/xml
+protocols: [HTTP, HTTPS]
+
+/customers:
+  is: [client-id-required]
+  type:
+    ecomCustomerResource.ecomCustomerCollection:
+      getResponse: !include examples/customer.json
+      postBody: !include examples/customer.json
+      postResponse: !include examples/customerCreateResponse.json
+      putBody: !include examples/customer.json
+
+  post:  
+
+  /{customerid}:
+    is: [client-id-required]
+    type:
+      ecomCustomerResource.ecomCustomerCollection:
+        putBody: !include examples/customer.json
+    put:
+    delete:
+    /wishlist:
+      is: [client-id-required]
+      type:
+        ecomItemResource.ecomItemCollection:
+          getResponse: !include examples/getItem.json
+          postResponse: !include examples/itemCreateResponse.json
+          postBody: !include examples/item.json
+      get:
+      post:
+      delete:
+        body:
+          application/json:
+            example:
+              {
+  "orderItemId":"1"
+}        
+      
+    /orders:
+      is: [client-id-required]
+      type:
+        ecomResources.ecomCollection:
+          getResponse: !include examples/getOrders.json
+          postBody: !include examples/createOrder.json
+          postResponse: !include examples/orderCreateResponse.json
+          putBody: !include examples/order.json
+      get:
+      post:
+      /{orderid}:
+        is: [client-id-required]
+        type:
+          ecomResources.ecomCollection:
+            getResponse: !include examples/getOrders.json
+            postBody: !include examples/order.json
+            postResponse: !include examples/orderCreateResponse.json
+            putBody: !include examples/putItem.json
+        get:
+        put:
+        /payment:
+          is: [client-id-required]
+          type:
+            ecomResources.ecomCollection:
+              postResponse: !include examples/paymentExample.json
+              postBody: !include examples/getOrders.json
+          post:
+          
+        
+          
+        
+      
+      
+        
+  

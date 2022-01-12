@@ -1,0 +1,48 @@
+#%RAML 1.0 Library
+
+types:
+  OrderSummary:
+    properties:
+      orderId?:
+        type: string
+        description: |
+          Order ID 
+      subtotal?:
+        type: string
+        description: |
+          Price for order (without tax and shipping)
+      shippingPrice?:
+        type: string
+        description: Product shipping price
+      total?:
+        type: string
+        description: |
+          Total price for order (with tax and shipping)
+
+  OrderItemSummary:
+    type: object
+    description: |
+          Information about ordered product (variant)
+    properties:
+      orderItemId:
+        type: string
+        description: |
+          Identifier of item which represents variantId
+      productId:
+        type: string
+        description: |
+          Identifier of product
+      productName:
+        type: string
+        description: |
+          Name of product
+      quantity:
+        type: integer
+        description: |
+          Number of ordered product
+      price:
+        type: string
+        description: |
+          Price of ordered item
+
+  

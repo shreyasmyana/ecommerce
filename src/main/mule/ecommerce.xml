@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	
+		
+<flow name="createUser" doc:id="68b814b9-c0b4-4e2c-b57b-b2a2ed4adb8f" >
+		<logger level="INFO" doc:name="Logger" doc:id="c1d99cf9-32a3-4f62-8cdf-22556cb09f7a" message="#[payload]"/>
+		<os:retrieve doc:name="Retrieve" doc:id="c5191075-b72b-44d0-89a5-5737d216ab7e" key="user_id" target="user_id">
+			<os:default-value ><![CDATA[1000]]></os:default-value>
+		</os:retrieve>
+		<ee:transform doc:name="Transform Message" doc:id="da91872d-a6ab-4a91-9b0b-60c543bf2321" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	AccountNumber: vars.user_id as String,
+	Name: (payload.firstname default "" ++ payload.lastname default ""),
+	BillingStreet: payload.address.street,
+	BillingCity: payload.address.city,
+	Phone: payload.phone.phoneNumber
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<os:store doc:name="Store" doc:id="1712916d-c8fc-49f8-94b5-b8f913ea9bd3" key="user_id">
+			<os:value ><![CDATA[#[max(payload.*AccountNumber) as Number + 1]]]></os:value>
+		</os:store>
+		<salesforce:create type="Account" doc:name="Create" doc:id="0adddf34-81d6-4489-815e-2c15c3f53591" config-ref="Salesforce_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b048d103-7f25-4db4-b4f2-925d361fab28" message="#[payload]"/>
+	</flow>
+	<flow name="deleteUser" doc:id="9339396b-7734-49b3-b246-3c402c496fa2" >
+		<logger level="INFO" doc:name="Logger" doc:id="7d8f2ee8-09d0-49d7-9e1e-7951a8b1a6ae" />
+		<set-variable value="#[attributes.uriParams.customerid]" doc:name="Set Variable" doc:id="42e03338-90ce-4f14-adf4-36458fd2089a" variableName="accNum"/>
+		<salesforce:query doc:name="Query" doc:id="7404be3d-e897-4845-8961-fe3fd7102106" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[select id from Account where AccountNumber = ':accNum']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	accNum : vars.accNum
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<salesforce:delete doc:name="Delete" doc:id="f02d1a39-9667-457e-8b6a-c2914803cf03" config-ref="Salesforce_Config">
+			<salesforce:ids ><![CDATA[#[payload.Id]]]></salesforce:ids>
+		</salesforce:delete>
+		<logger level="INFO" doc:name="Logger" doc:id="2aff4478-27a4-4b06-8a35-356ab7a47fe7" />
+	</flow>
+	<flow name="updateUser" doc:id="678ccdd1-ef9b-4fe3-b255-4374df8d0313" >
+		<logger level="INFO" doc:name="Logger" doc:id="ceebbe13-2c57-4fe7-ad1f-dd55d045b783" />
+		<set-variable value="#[attributes.uriParams.customerid]" doc:name="Set Variable" doc:id="a1f383f5-a0f5-4aa7-bdc6-5abf6f45d5b6" variableName="accNum"/>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="2f244bb5-d7ae-494a-997f-32134707e0db" variableName="body"/>
+		<salesforce:query doc:name="Query" doc:id="2328a82c-28dd-4ffa-8102-cea1bac8657b" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[select id, Name, BillingStreet, BillingCity, Phone from Account where AccountNumber = ':accNum']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	accNum : vars.accNum
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="a244b8dd-a054-4900-92da-18603e4e1526" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	Id:payload.Id,
+	AccountNumber:vars.accNum  as String,
+	Name: (vars.body.firstname default "") ++ (vars.body.lastname default ""),
+	BillingStreet: vars.body.address.street,
+	BillingCity: vars.body.address.city,
+	Phone: vars.body.phone.phoneNumber
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:update type="Account" doc:name="Update" doc:id="79748497-fea2-4cd1-8dae-2e61300fffc8" config-ref="Salesforce_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="82c7e193-c005-482f-b9eb-9482b29cb55a" />
+	</flow>
+	<flow name="createOrder" doc:id="b75fb9e4-3453-4240-9d8c-358584c0705d" >
+		<logger level="INFO" doc:name="Logger" doc:id="1500d602-90b5-4bdb-960c-cc87ca872102" message="#[payload]"/>
+		<set-variable value="#[attributes.uriParams.customerid]" doc:name="Set Variable" doc:id="d5244d86-aa14-48b6-8ff2-6dfe66bb7ad5" variableName="customerId"/>
+		<os:retrieve doc:name="Retrieve" doc:id="26d5c087-6921-4ae4-952d-24edaed2d56b" key="order_id" target="order_id">
+			<os:default-value ><![CDATA[1]]></os:default-value>
+		</os:retrieve>
+		<ee:transform doc:name="Transform Message" doc:id="b5ae8336-0211-4e0e-bb03-9a958350c935" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	subtotal: payload.subtotal,
+	shippingPrice: payload.shippingPrice,
+	total: payload.total,
+	customerId: vars.customerId,
+	order_id: vars.order_id as String,
+	orderItems: payload.orderItems map(item, index) ->{
+		order_id: vars.order_id as String,
+		orderItemId: item.orderItemId,
+		productId: item.productId,
+		productName: item.productName,
+		price: item.price,
+		quantity: item.quantity	
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<os:store doc:name="Store" doc:id="9135ef5f-7f68-4739-b931-d793e3518d27" key="order_id">
+			<os:value><![CDATA[#[max(payload.*order_id) as Number + 1]]]></os:value>
+		</os:store>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="11f47d1b-225b-4050-89e6-c6037fa102e9" >
+			<route >
+				<db:insert doc:name="Insert" doc:id="b60631b3-1a77-4bc9-8ba4-fcb402953279" config-ref="Database_Config">
+			<db:sql><![CDATA[INSERT INTO ORDERS ("ORDER_ID", "Customer_ID", "total", "shipping_price", "subtotal") VALUES (:order_id,:customerId,:total,:shippingPrice,:subtotal)]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	'order_id':payload.order_id,
+	'customerId':payload.customerId,
+	'total':payload.total,
+	'shippingPrice':payload.shippingPrice,
+	'subtotal':payload.subtotal,
+}]]]></db:input-parameters>
+		</db:insert>
+			</route>
+			<route >
+				<db:bulk-insert doc:name="Bulk insert" doc:id="f2e6cd5e-3890-4082-a5ba-83d7998359ef" config-ref="Database_Config">
+					<db:bulk-input-parameters ><![CDATA[#[payload.orderItems]]]></db:bulk-input-parameters>
+					<db:sql ><![CDATA[INSERT INTO ORDER_ITEMS ("ORDER_ITEMS_ID","ORDER_ID","QUANTITY","PRODUCT_NAME","PRICE","PRODUCT_ID") 
+VALUES (:orderItemId, :order_id, :quantity, :productName, :price, :productId)]]></db:sql>
+				</db:bulk-insert>
+			</route>
+		</scatter-gather>
+		<logger level="INFO" doc:name="Logger" doc:id="44277d5d-442f-4d5d-8cdc-ac6c4d6708ba" message="#[payload]"/>
+	</flow>
+	<flow name="getOrders" doc:id="8c03d85a-3efc-4fa3-af73-2ab7f573c2db" >
+		<logger level="INFO" doc:name="Logger" doc:id="62710f18-10b2-45da-8eb3-db90ba7ad354" />
+		<set-variable value="#[attributes.uriParams.customerid]" doc:name="Set Variable" doc:id="90309fdb-3584-40a0-a1ec-ee4b916748cc" variableName="customerId"/>
+		<db:select doc:name="Select" doc:id="83d72083-d9de-4e33-b318-7284b298f5e1" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT o."ORDER_ID", o."Customer_ID", o."total", o."shipping_price", o."subtotal", 
+i.PRODUCT_NAME, i.QUANTITY, i.PRICE, i.ORDER_ITEMS_ID, i.PRODUCT_ID
+FROM ORDERS o , ORDER_ITEMS i
+WHERE o.order_id = i.order_id
+AND o."Customer_ID" = :custId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	custId:vars.customerId
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="d22002f6-fc3c-44e1-9793-6248e60f91ea" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="f2d7664f-d30b-487b-8767-c15a3cace2ed" message="#[payload]"/>
+	</flow>
+	<flow name="getOrder" doc:id="60421854-9756-43d8-a252-b6806d7d661b" >
+		<logger level="INFO" doc:name="Logger" doc:id="2632ff8c-e3e1-4714-97b7-e4dbe62fb611" />
+		<db:select doc:name="Select" doc:id="12912d69-ff41-4ae8-8c23-4f7ed5d47231" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT o."ORDER_ID", o."Customer_ID", o."total", o."shipping_price", o."subtotal", 
+i.PRODUCT_NAME, i.QUANTITY, i.PRICE, i.ORDER_ITEMS_ID, i.PRODUCT_ID
+FROM ORDERS o , ORDER_ITEMS i
+WHERE o.order_id = i.order_id
+AND o."Customer_ID" = :custId
+AND o.order_id = :orderId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	custId:attributes.uriParams.customerid,
+	orderId:attributes.uriParams.orderid
+}]]]></db:input-parameters>
+		</db:select>
+		<logger level="INFO" doc:name="Logger" doc:id="c09d3d61-58e1-4c0f-ac38-58156226874d" />
+	</flow>
+	<flow name="updateOrder" doc:id="a749e4ca-410e-4ff9-b19f-e7dc732578e9" >
+		<logger level="INFO" doc:name="Logger" doc:id="c9cacdb8-77b0-4253-be36-59647cd2a43d" />
+		<ee:transform doc:name="Transform Message" doc:id="f9ee7b0e-148f-450d-bf61-9e6bd1fece13" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:update doc:name="Update" doc:id="e7c3da20-6c46-41e8-b315-b37eabda3af4" config-ref="Database_Config">
+			<db:sql ><![CDATA[UPDATE ORDER_ITEMS SET PRODUCT_NAME = :productName, QUANTITY = :quantity WHERE order_id =:orderId
+AND PRODUCT_ID = :productId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	'productName': payload.productName as String,
+	'quantity': payload.quantity as String,
+	'orderId': payload.orderId,
+	'productId': payload.productId
+}]]]></db:input-parameters>
+		</db:update>
+		<logger level="INFO" doc:name="Logger" doc:id="b47aeb80-7d3c-4f83-8055-58a8199b4ee1" message="#[payload]"/>
+	</flow>
+	<flow name="InsertItemToWishlist" doc:id="854e3cff-4d70-44cf-a491-b674321b78c2" >
+		<logger level="INFO" doc:name="Logger" doc:id="74a6e910-65e3-4335-afda-be445648d531" />
+		<set-variable value="#[attributes.uriParams.customerid]" doc:name="Set Variable" doc:id="2233baf5-c3e1-4c00-8d14-dd6e6f9cc3ad" variableName="customerId"/>
+		<ee:transform doc:name="Transform Message" doc:id="599ce6c5-ec68-4694-93e4-cb339bbe5564" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	customerId: vars.customerId,
+	orderItemId: payload.orderItemId,
+	productId: payload.productId,
+	productName: payload.productName,
+	price: payload.price,
+	quantity: payload.quantity
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:insert doc:name="Insert" doc:id="d4b6e5a9-1112-479a-b3fc-aad6f5683e49" config-ref="Database_Config">
+			<db:sql ><![CDATA[INSERT INTO wishlist (customerid, orderitemid, price,productid,productname,quantity) 
+VALUES(:customerId, :orderItemId, :price, :productId, :productName, :quantity)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	'customerId': vars.customerId,
+	'orderItemId' : payload.orderItemId, 
+	'productId' :payload.productId , 
+	'productName': payload.productName, 
+	'price': payload.price,
+	'quantity': payload.quantity
+}]]]></db:input-parameters>
+		</db:insert>
+		<logger level="INFO" doc:name="Logger" doc:id="a3187b7f-7dbb-4362-8741-9a60a7c4d86c" />
+	</flow>
+	<flow name="deleteItemFromWishlist" doc:id="80371cfb-4a01-40ab-a732-1ed60635833e" >
+		<logger level="INFO" doc:name="Logger" doc:id="b9bf1dad-c21c-429c-b48c-5983f0376cd2" />
+		<db:delete doc:name="Delete" doc:id="ff6c623f-93e1-4c79-ae61-a86a13da69cc" config-ref="Database_Config">
+			<db:sql ><![CDATA[DELETE FROM WISHLIST WHERE CUSTOMERID = :custId AND ORDERITEMID = :orderItemId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	custId: attributes.uriParams.customerid,
+	orderItemId: payload.orderItemId
+}]]]></db:input-parameters>
+		</db:delete>
+		<logger level="INFO" doc:name="Logger" doc:id="05e27749-85da-4130-9864-2504166e15f2" message="#[payload]"/>
+	</flow>
+	<flow name="getItemsFromWishlist" doc:id="ab05d1d7-3574-40a6-9e68-e0fab93551b3" >
+		<logger level="INFO" doc:name="Logger" doc:id="02abc3e6-659f-4add-8230-490f236aec2a" />
+		<db:select doc:name="Select" doc:id="05499592-0515-452b-bc6c-398d219123ea" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * FROM WISHLIST WHERE CUSTOMERID=:custId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	custId:attributes.uriParams.customerid
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="2aa293cc-edf1-4d68-a262-91e62c0d3a8e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	orderItemId: payload01.ORDERITEMID,
+	productId: payload01.PRODUCTID,
+	productName: payload01.PRODUCTNAME,
+	price: payload01.PRICE,
+	quantity: payload01.QUANTITY
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="0003a95b-a30a-4c42-884a-684ddcceae09" message="#[payload]"/>
+	</flow>	
+	
+
+</mule>

@@ -1,0 +1,60 @@
+#%RAML 1.0 Library
+
+traits:
+  errorResp: !include ../traits/errorResponseTrait.raml
+
+securitySchemes:
+  customSecurity: !include ../securityschemes/customSecurityScheme.raml
+
+resourceTypes:
+  ecomItemCollection:
+    is: [errorResp]   
+    securedBy:
+      - customSecurity    
+    get?:
+      description: This is used to fetch <<resourcePathName>>
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                <<getResponse>>
+    post?:
+      description: This is used create <<resourcePathName>>
+      body:
+        application/json:
+          example: |
+            <<postBody>>
+      responses:
+        201:
+          body:
+            application/json:
+              example: |
+                <<postResponse>>
+    delete?:
+      description: This is used to Delete <<resourcePathName>>
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                {
+                  "message": "Item was deleted"
+                }
+        400:
+          body:
+            application/json:
+              example: |
+                {
+                  "message": "Item not deleted"
+                }
+        404:
+          body:
+            application/json: 
+              example: |
+                {
+                  "message": "Item not found"
+                  }      
+
+
+          

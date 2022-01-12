@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="ecom_interface-suite.xml" />
+	<munit:test name="post:\customers\(customerid)\orders:application\json:ecom-config-test" doc:id="63094b79-0fee-43ec-900e-1f1946e7a79e" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="a8433acc-7fd0-467e-8acc-93f91d9329ee" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postcustomerscustomeridordersapplicationjsonecomconfigtest\set-event_payload1.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postcustomerscustomeridordersapplicationjsonecomconfigtest\set-event_attributes1.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postcustomerscustomeridordersapplicationjsonecomconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\customers\(customerid)\orders:application\json:ecom-config" doc:id="4181a623-4e07-4000-9f11-517d74fcbb78" name="post:\customers\(customerid)\orders:application\json:ecom-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="8e2833d1-e3d5-4b16-9084-6390f08cf8a3" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="e8f2503c-b771-4838-ba81-68258b011b45" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Flow Reference" doc:id="23eccd5e-b391-45cc-921a-1da82bc9fe34" processor="flow-ref" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="03144485-0750-4a38-b209-b9d5c4af33f7" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\customers\(customerid)\wishlist:application\json:ecom-config-test" doc:id="5e32d1ce-f4d3-43da-b30d-e7467df3f5d6" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="0b5e4f35-bc03-4c35-bd7e-71cf0688bfb8" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postcustomerscustomeridwishlistapplicationjsonecomconfigtest\set-event_payload1.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postcustomerscustomeridwishlistapplicationjsonecomconfigtest\set-event_attributes1.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postcustomerscustomeridwishlistapplicationjsonecomconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\customers\(customerid)\wishlist:application\json:ecom-config" doc:id="1928858f-59a6-4870-a644-f2b417a71b92" name="post:\customers\(customerid)\wishlist:application\json:ecom-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify Flow Reference" doc:id="fa2687cc-7ed8-465b-a1b5-ec802bf4c499" processor="flow-ref" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c4e26901-9f21-4680-980e-af9ecb50d686" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="9ebe1917-4b31-497f-8abf-212d2fa4b60a" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f4cc2a8e-83ee-4506-ace8-8359b3d4f3fb" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\customers\(customerid)\orders\(orderid)\payment:application\json:ecom-config-test" doc:id="91505846-80ce-44cc-a784-2a97356c58d9" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="6a2015bf-84a0-4c2a-b984-f611bc80b762" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postcustomerscustomeridordersorderidpaymentapplicationjsonecomconfigtest\set-event_payload1.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postcustomerscustomeridordersorderidpaymentapplicationjsonecomconfigtest\set-event_attributes1.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postcustomerscustomeridordersorderidpaymentapplicationjsonecomconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\customers\(customerid)\orders\(orderid)\payment:application\json:ecom-config" doc:id="ae2672e1-aa76-443b-8d20-e4489da62b58" name="post:\customers\(customerid)\orders\(orderid)\payment:application\json:ecom-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="a44c207b-7039-4680-82dc-d1e88d4e1225" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcustomerscustomeridordersorderidpaymentapplicationjsonecomconfigtest::assert_expression_payload1
+---
+assert_expression_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="ba0d8b54-00ca-48d7-8570-93633d701bdf" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="4896bab5-f54d-4183-a36f-183ec4ddd6b2" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get:\customers\(customerid)\orders:ecom-config-test" doc:id="471e3462-7dc8-4001-9d53-951fb0557ae7" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Flow Reference" doc:id="19400115-c077-4ac7-be2f-8c476a000dac" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="45e521cf-7109-42d2-b146-dfc9431728d5" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://getcustomerscustomeridordersecomconfigtest\mock_payload1.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://getcustomerscustomeridordersecomconfigtest\mock_variable_2.dwl')]" />
+						<munit-tools:variable key="customerId" value="#[output application/java --- readUrl('classpath://getcustomerscustomeridordersecomconfigtest\mock_variable_3.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="39c28b61-441b-434c-a52c-1ee4948e9b70" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://getcustomerscustomeridordersecomconfigtest\set-event_payload2.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://getcustomerscustomeridordersecomconfigtest\set-event_attributes2.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getcustomerscustomeridordersecomconfigtest\set-event_variable_2.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\customers\(customerid)\orders:ecom-config" doc:id="e30b94eb-e4e4-4faf-b9a2-59fe0827c071" name="get:\customers\(customerid)\orders:ecom-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="a008c57b-fa51-4fcc-9658-15cb49477507" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getcustomerscustomeridordersecomconfigtest::assert_expression_payload2
+---
+assert_expression_payload2::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="get:\customers\(customerid)\wishlist:ecom-config-test" doc:id="893af398-c2c3-4910-8886-57326676d3de" >
+		<munit:behavior >
+			<munit-tools:spy doc:name="Spy Flow Reference" doc:id="ada4ac92-115d-4067-9735-5b7675297343" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="48433160-e96a-47ce-a8ee-6f65995ebe9f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="fdbc9703-1211-410c-855b-36bf9475d04b" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import getcustomerscustomeridwishlistecomconfigtest::spy_assert_payload2
+---
+spy_assert_payload2::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="beb3a4bd-b127-490c-9113-1cb72d61fd27" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import getcustomerscustomeridwishlistecomconfigtest::spy_assert_payload3
+---
+spy_assert_payload3::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="8734a383-e93b-4fbb-8d00-288378c36bdf" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://getcustomerscustomeridwishlistecomconfigtest\set-event_payload2.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://getcustomerscustomeridwishlistecomconfigtest\set-event_attributes2.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getcustomerscustomeridwishlistecomconfigtest\set-event_variable_2.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\customers\(customerid)\wishlist:ecom-config" doc:id="63da5faa-f775-429d-be0a-0160fbd18eb6" name="get:\customers\(customerid)\wishlist:ecom-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="d9729de2-3b64-4fc1-9cc6-7c3eba09d94c" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getcustomerscustomeridwishlistecomconfigtest::assert_expression_payload2
+---
+assert_expression_payload2::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Flow Reference" doc:id="b31acc88-08b8-4a22-9f9f-18920ce55b91" processor="flow-ref" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="48433160-e96a-47ce-a8ee-6f65995ebe9f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

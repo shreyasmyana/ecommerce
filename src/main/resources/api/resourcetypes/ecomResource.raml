@@ -1,0 +1,61 @@
+#%RAML 1.0 Library
+
+traits:
+  errorResp: !include ../traits/errorResponseTrait.raml
+
+securitySchemes:
+  customSecurity: !include ../securityschemes/customSecurityScheme.raml
+
+resourceTypes:
+  ecomCollection:
+    is: [errorResp]   
+    securedBy:
+      - customSecurity    
+    get?:
+      description: This is used to fetch <<resourcePathName>>
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                <<getResponse>>
+    post?:
+      description: This is used create <<resourcePathName>>
+      body:
+        application/json:
+          example: |
+            <<postBody>>
+      responses:
+        201:
+          body:
+            application/json:
+              example: |
+                <<postResponse>>
+    put?:
+      description: This is used to update <<resourcePathName>>
+      body:
+        application/json:
+          example:
+            <<putBody>>
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                {
+                  "message": "Order was updated"
+                }
+        400:
+          body:
+            application/json:
+              example: |
+                {
+                  "message": "Order not updated"
+                }
+        404:
+          body:
+            application/json: 
+              example: |
+                {
+                  "message": "Order not found"
+                }
